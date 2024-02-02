@@ -12,7 +12,7 @@ kotlin {
                 api(project(":i18n"))
 
                 implementation(libs.unifile)
-                implementation(libs.junrar)
+                implementation(libs.bundles.compress)
             }
         }
         val androidMain by getting {
