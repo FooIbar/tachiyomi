@@ -1,7 +1,7 @@
 [versions]
 compiler = "1.5.13"
-compose-bom = "2024.04.00-alpha02"
-accompanist = "0.34.0"
+compose-bom = "2024.05.00-alpha01"
+accompanist = "0.35.0-alpha"
 
 [libraries]
 compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compiler" }
@@ -17,9 +17,6 @@ ui-util = { module = "androidx.compose.ui:ui-util" }
 
 material3-core = { module = "androidx.compose.material3:material3" }
 material-icons = { module = "androidx.compose.material:material-icons-extended" }
-
-# Some components aren't available in Material3
-material-core = { module = "androidx.compose.material:material" }
 
 glance = "androidx.glance:glance-appwidget:1.0.0"
 
