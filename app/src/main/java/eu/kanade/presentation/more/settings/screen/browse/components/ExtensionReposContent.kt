@@ -43,7 +43,7 @@ fun ExtensionReposContent(
         repos.forEach {
             item {
                 ExtensionRepoListItem(
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier.animateItem(),
                     repo = it,
                     onDelete = { onClickDelete(it) },
                 )
