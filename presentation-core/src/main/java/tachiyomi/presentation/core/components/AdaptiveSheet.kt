@@ -3,13 +3,13 @@ package tachiyomi.presentation.core.components
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -80,8 +80,7 @@ fun AdaptiveSheet(
         Box(
             modifier = Modifier
                 .clickable(
-                    enabled = true,
-                    interactionSource = remember { MutableInteractionSource() },
+                    interactionSource = null,
                     indication = null,
                     onClick = internalOnDismissRequest,
                 )
@@ -93,7 +92,7 @@ fun AdaptiveSheet(
                 modifier = Modifier
                     .requiredWidthIn(max = 460.dp)
                     .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
+                        interactionSource = null,
                         indication = null,
                         onClick = {},
                     )
@@ -113,23 +112,25 @@ fun AdaptiveSheet(
             }
         }
     } else {
+        val decayAnimationSpec = rememberSplineBasedDecay<Float>()
         val anchoredDraggableState = remember {
             AnchoredDraggableState(
                 initialValue = 1,
-                animationSpec = sheetAnimationSpec,
                 positionalThreshold = { with(density) { 56.dp.toPx() } },
                 velocityThreshold = { with(density) { 125.dp.toPx() } },
+                snapAnimationSpec = sheetAnimationSpec,
+                decayAnimationSpec = decayAnimationSpec,
             )
         }
         val internalOnDismissRequest = {
-            if (anchoredDraggableState.currentValue == 0) {
+            if (anchoredDraggableState.settledValue == 0) {
                 scope.launch { anchoredDraggableState.animateTo(1) }
             }
         }
         Box(
             modifier = Modifier
                 .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
+                    interactionSource = null,
                     indication = null,
                     onClick = internalOnDismissRequest,
                 )
@@ -147,7 +148,7 @@ fun AdaptiveSheet(
                 modifier = Modifier
                     .widthIn(max = 460.dp)
                     .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
+                        interactionSource = null,
                         indication = null,
                         onClick = {},
                     )
@@ -194,7 +195,7 @@ fun AdaptiveSheet(
 
             LaunchedEffect(anchoredDraggableState) {
                 scope.launch { anchoredDraggableState.animateTo(0) }
-                snapshotFlow { anchoredDraggableState.currentValue }
+                snapshotFlow { anchoredDraggableState.settledValue }
                     .drop(1)
                     .filter { it == 1 }
                     .collectLatest {
