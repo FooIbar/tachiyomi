@@ -10,8 +10,6 @@ plugins {
 
 shortcutHelper.setFilePath("./shortcuts.xml")
 
-val SUPPORTED_ABIS = setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-
 android {
     namespace = "eu.kanade.tachiyomi"
 
@@ -27,10 +25,6 @@ android {
         buildConfigField("boolean", "INCLUDE_UPDATER", "false")
         buildConfigField("boolean", "PREVIEW", "false")
 
-        ndk {
-            abiFilters += SUPPORTED_ABIS
-        }
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -38,8 +32,7 @@ android {
         abi {
             isEnable = true
             reset()
-            include(*SUPPORTED_ABIS.toTypedArray())
-            isUniversalApk = true
+            include("arm64-v8a")
         }
     }
 
