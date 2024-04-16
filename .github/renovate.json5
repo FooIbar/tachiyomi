@@ -3,8 +3,15 @@
   "extends": [
     "config:base"
   ],
-  "schedule": ["every sunday"],
+  "automerge": true,
   "packageRules": [
+    {
+      "groupName": "Compose BOM",
+      "matchPackageNames": [
+        "dev.chrisbanes.compose:compose-bom"
+      ],
+      "ignoreUnstable": false
+    },
     {
       // Compiler plugins are tightly coupled to Kotlin version
       "groupName": "Kotlin",
