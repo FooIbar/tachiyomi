@@ -4,6 +4,8 @@ compose-bom = "2023.12.00-alpha04"
 accompanist = "0.33.2-alpha"
 
 [libraries]
+compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compiler" }
+
 activity = "androidx.activity:activity-compose:1.8.2"
 bom = { group = "dev.chrisbanes.compose", name = "compose-bom", version.ref = "compose-bom" }
 foundation = { module = "androidx.compose.foundation:foundation" }
