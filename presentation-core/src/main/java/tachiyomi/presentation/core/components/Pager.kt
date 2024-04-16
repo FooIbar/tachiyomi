@@ -23,7 +23,7 @@ fun HorizontalPager(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     pageSize: PageSize = PageSize.Fill,
-    beyondBoundsPageCount: Int = 0,
+    beyondViewportPageCount: Int = 0,
     pageSpacing: Dp = 0.dp,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     userScrollEnabled: Boolean = true,
@@ -40,7 +40,7 @@ fun HorizontalPager(
         modifier = modifier,
         contentPadding = contentPadding,
         pageSize = pageSize,
-        beyondBoundsPageCount = beyondBoundsPageCount,
+        beyondViewportPageCount = beyondViewportPageCount,
         pageSpacing = pageSpacing,
         verticalAlignment = verticalAlignment,
         flingBehavior = PagerDefaults.flingBehavior(
