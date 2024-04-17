@@ -5,6 +5,7 @@
     "group:allNonMajor"
   ],
   "automerge": true,
+  "schedule": ["every friday"],
   "packageRules": [
     {
       "groupName": "Compose BOM",
