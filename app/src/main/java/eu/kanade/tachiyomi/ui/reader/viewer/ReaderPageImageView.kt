@@ -1,10 +1,10 @@
 package eu.kanade.tachiyomi.ui.reader.viewer
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.PointF
 import android.graphics.RectF
 import android.graphics.drawable.Animatable
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.GestureDetector
@@ -18,23 +18,27 @@ import androidx.annotation.StyleRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.os.postDelayed
 import androidx.core.view.isVisible
+import coil3.BitmapImage
 import coil3.dispose
 import coil3.imageLoader
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.davemorrissey.labs.subscaleview.ImageSource
+import coil3.size.Dimension
+import coil3.size.Precision
+import coil3.size.Size
+import coil3.size.SizeResolver
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.EASE_IN_OUT_QUAD
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.EASE_OUT_QUAD
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.Companion.EASE_IN_OUT_QUAD
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.Companion.EASE_OUT_QUAD
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.Companion.SCALE_TYPE_CENTER_INSIDE
 import com.github.chrisbanes.photoview.PhotoView
+import eu.kanade.tachiyomi.data.coil.cropBorders
 import eu.kanade.tachiyomi.ui.reader.viewer.webtoon.WebtoonSubsamplingImageView
-import eu.kanade.tachiyomi.util.system.GLUtil
 import eu.kanade.tachiyomi.util.system.animatorDurationScale
 import eu.kanade.tachiyomi.util.view.isVisibleOnScreen
 import java.io.InputStream
-import java.nio.ByteBuffer
+import kotlin.math.roundToInt
 
 /**
  * A wrapper view for showing page image.
@@ -93,19 +97,11 @@ open class ReaderPageImageView @JvmOverloads constructor(
             if (isReady) {
                 landscapeZoom(forward)
             } else {
-                setOnImageEventListener(
-                    object : SubsamplingScaleImageView.DefaultOnImageEventListener() {
-                        override fun onReady() {
-                            setupZoom(config)
-                            landscapeZoom(forward)
-                            this@ReaderPageImageView.onImageLoaded()
-                        }
-
-                        override fun onImageLoadError(e: Exception) {
-                            onImageLoadError()
-                        }
-                    },
-                )
+                setOnImageEventListener {
+                    setupZoom(config)
+                    landscapeZoom(forward)
+                    this@ReaderPageImageView.onImageLoaded()
+                }
             }
         }
     }
@@ -116,7 +112,7 @@ open class ReaderPageImageView @JvmOverloads constructor(
             config!!.landscapeZoom &&
             config!!.minimumScaleType == SCALE_TYPE_CENTER_INSIDE &&
             sWidth > sHeight &&
-            scale == minScale
+            scale == getMinScale()
         ) {
             handler?.postDelayed(500) {
                 val point = when (config!!.zoomStartPosition) {
@@ -228,10 +224,8 @@ open class ReaderPageImageView @JvmOverloads constructor(
         } else {
             SubsamplingScaleImageView(context)
         }.apply {
-            setMaxTileSize(GLUtil.maxTextureSize)
             setDoubleTapZoomStyle(SubsamplingScaleImageView.ZOOM_FOCUS_CENTER)
             setPanLimit(SubsamplingScaleImageView.PAN_LIMIT_INSIDE)
-            setMinimumTileDpi(180)
             setOnStateChangedListener(
                 object : SubsamplingScaleImageView.OnStateChangedListener {
                     override fun onScaleChanged(newScale: Float, origin: Int) {
@@ -262,33 +256,38 @@ open class ReaderPageImageView @JvmOverloads constructor(
     }
 
     private fun setNonAnimatedImage(
-        image: Any,
+        data: Any,
         config: Config,
     ) = (pageView as? SubsamplingScaleImageView)?.apply {
         setDoubleTapZoomDuration(config.zoomDuration.getSystemScaledDuration())
         setMinimumScaleType(config.minimumScaleType)
         setMinimumDpi(1) // Just so that very small image will be fit for initial load
-        setCropBorders(config.cropBorders)
-        setOnImageEventListener(
-            object : SubsamplingScaleImageView.DefaultOnImageEventListener() {
-                override fun onReady() {
-                    setupZoom(config)
-                    if (isVisibleOnScreen()) landscapeZoom(true)
-                    this@ReaderPageImageView.onImageLoaded()
-                }
-
-                override fun onImageLoadError(e: Exception) {
-                    this@ReaderPageImageView.onImageLoadError()
-                }
-            },
-        )
-
-        when (image) {
-            is BitmapDrawable -> setImage(ImageSource.bitmap(image.bitmap))
-            is InputStream -> setImage(ImageSource.inputStream(image))
-            else -> throw IllegalArgumentException("Not implemented for class ${image::class.simpleName}")
+        setOnImageEventListener {
+            setupZoom(config)
+            if (isVisibleOnScreen()) landscapeZoom(true)
+            this@ReaderPageImageView.onImageLoaded()
         }
-        isVisible = true
+
+        val request = ImageRequest.Builder(context)
+            .data(data)
+            .memoryCachePolicy(CachePolicy.DISABLED)
+            .diskCachePolicy(CachePolicy.DISABLED)
+            .target(
+                onSuccess = { result ->
+                    val image = result as BitmapImage
+                    setImage(image.bitmap)
+                    isVisible = true
+                },
+                onError = {
+                    this@ReaderPageImageView.onImageLoadError()
+                },
+            )
+            .size(sizeResolver)
+            .precision(Precision.INEXACT)
+            .cropBorders(config.cropBorders)
+            .crossfade(false)
+            .build()
+        context.imageLoader.enqueue(request)
     }
 
     private fun prepareAnimatedImageView() {
@@ -331,18 +330,13 @@ open class ReaderPageImageView @JvmOverloads constructor(
     }
 
     private fun setAnimatedImage(
-        image: Any,
+        data: Any,
         config: Config,
     ) = (pageView as? AppCompatImageView)?.apply {
         if (this is PhotoView) {
             setZoomTransitionDuration(config.zoomDuration.getSystemScaledDuration())
         }
 
-        val data = when (image) {
-            is Drawable -> image
-            is InputStream -> ByteBuffer.wrap(image.readBytes())
-            else -> throw IllegalArgumentException("Not implemented for class ${image::class.simpleName}")
-        }
         val request = ImageRequest.Builder(context)
             .data(data)
             .memoryCachePolicy(CachePolicy.DISABLED)
@@ -385,3 +379,7 @@ open class ReaderPageImageView @JvmOverloads constructor(
 }
 
 private const val MAX_ZOOM_SCALE = 5F
+private val sizeResolver by lazy {
+    val maxWidth = Resources.getSystem().displayMetrics.widthPixels * MAX_ZOOM_SCALE
+    SizeResolver(Size(Dimension(maxWidth.roundToInt()), Dimension.Undefined))
+}

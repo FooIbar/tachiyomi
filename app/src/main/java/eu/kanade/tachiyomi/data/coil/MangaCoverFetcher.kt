@@ -20,7 +20,6 @@ import okhttp3.CacheControl
 import okhttp3.Call
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.internal.http.HTTP_NOT_MODIFIED
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 import okio.Source
@@ -172,7 +171,7 @@ class MangaCoverFetcher(
     private suspend fun executeNetworkRequest(): Response {
         val client = sourceLazy.value?.client ?: callFactoryLazy.value
         val response = client.newCall(newRequest()).await()
-        if (!response.isSuccessful && response.code != HTTP_NOT_MODIFIED) {
+        if (!response.isSuccessful && response.code != 304) {
             response.close()
             throw Exception(response.message)
         }

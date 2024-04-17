@@ -19,7 +19,7 @@ class TachiyomiImageDecoder(private val resources: ImageSource, private val opti
 
     override suspend fun decode(): DecodeResult {
         val decoder = resources.sourceOrNull()?.use {
-            ImageDecoder.newInstance(it.inputStream())
+            ImageDecoder.newInstance(it.inputStream(), options.cropBorders, displayProfile)
         }
 
         check(decoder != null && decoder.width > 0 && decoder.height > 0) { "Failed to initialize decoder" }
@@ -38,8 +38,11 @@ class TachiyomiImageDecoder(private val resources: ImageSource, private val opti
     class Factory : Decoder.Factory {
 
         override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
-            if (!isApplicable(result.source.source())) return null
-            return TachiyomiImageDecoder(result.source, options)
+            return if (options.cropBorders || displayProfile != null || isApplicable(result.source.source())) {
+                TachiyomiImageDecoder(result.source, options)
+            } else {
+                null
+            }
         }
 
         private fun isApplicable(source: BufferedSource): Boolean {
@@ -56,5 +59,9 @@ class TachiyomiImageDecoder(private val resources: ImageSource, private val opti
         override fun equals(other: Any?) = other is Factory
 
         override fun hashCode() = javaClass.hashCode()
+    }
+
+    companion object {
+        var displayProfile: ByteArray? = null
     }
 }

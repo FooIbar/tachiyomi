@@ -26,6 +26,8 @@ import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.domain.ui.model.setAppCompatDelegateThemeMode
 import eu.kanade.tachiyomi.crash.CrashActivity
 import eu.kanade.tachiyomi.crash.GlobalExceptionHandler
+import eu.kanade.tachiyomi.data.coil.HardwareBitmapInterceptor
+import eu.kanade.tachiyomi.data.coil.InputStreamInterceptor
 import eu.kanade.tachiyomi.data.coil.MangaCoverFetcher
 import eu.kanade.tachiyomi.data.coil.MangaCoverKeyer
 import eu.kanade.tachiyomi.data.coil.MangaKeyer
@@ -139,6 +141,8 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
                 add(MangaCoverFetcher.MangaCoverFactory(callFactoryLazy))
                 add(MangaKeyer())
                 add(MangaCoverKeyer())
+                add(InputStreamInterceptor)
+                add(HardwareBitmapInterceptor)
             }
             crossfade((300 * this@App.animatorDurationScale).toInt())
             if (networkPreferences.verboseLogging().get()) logger(DebugLogger())
