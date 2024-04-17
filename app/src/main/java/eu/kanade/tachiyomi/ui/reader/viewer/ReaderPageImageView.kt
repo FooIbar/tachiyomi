@@ -18,19 +18,23 @@ import androidx.annotation.StyleRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.os.postDelayed
 import androidx.core.view.isVisible
+import coil3.BitmapImage
 import coil3.dispose
 import coil3.imageLoader
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import coil3.size.Precision
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.EASE_IN_OUT_QUAD
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.EASE_OUT_QUAD
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE
 import com.github.chrisbanes.photoview.PhotoView
+import eu.kanade.tachiyomi.data.coil.WebtoonViewSizeResolver
+import eu.kanade.tachiyomi.data.coil.cropBorders
+import eu.kanade.tachiyomi.data.coil.customDecoder
 import eu.kanade.tachiyomi.ui.reader.viewer.webtoon.WebtoonSubsamplingImageView
-import eu.kanade.tachiyomi.util.system.GLUtil
 import eu.kanade.tachiyomi.util.system.animatorDurationScale
 import eu.kanade.tachiyomi.util.view.isVisibleOnScreen
 import okio.BufferedSource
@@ -227,10 +231,8 @@ open class ReaderPageImageView @JvmOverloads constructor(
         } else {
             SubsamplingScaleImageView(context)
         }.apply {
-            setMaxTileSize(GLUtil.maxTextureSize)
             setDoubleTapZoomStyle(SubsamplingScaleImageView.ZOOM_FOCUS_CENTER)
             setPanLimit(SubsamplingScaleImageView.PAN_LIMIT_INSIDE)
-            setMinimumTileDpi(180)
             setOnStateChangedListener(
                 object : SubsamplingScaleImageView.OnStateChangedListener {
                     override fun onScaleChanged(newScale: Float, origin: Int) {
@@ -282,12 +284,36 @@ open class ReaderPageImageView @JvmOverloads constructor(
             },
         )
 
-        when (data) {
-            is BitmapDrawable -> setImage(ImageSource.bitmap(data.bitmap))
-            is BufferedSource -> setImage(ImageSource.inputStream(data.inputStream()))
-            else -> throw IllegalArgumentException("Not implemented for class ${data::class.simpleName}")
+        if (isWebtoon) {
+            val request = ImageRequest.Builder(context)
+                .data(data)
+                .memoryCachePolicy(CachePolicy.DISABLED)
+                .diskCachePolicy(CachePolicy.DISABLED)
+                .target(
+                    onSuccess = { result ->
+                        val image = result as BitmapImage
+                        setImage(ImageSource.bitmap(image.bitmap))
+                        isVisible = true
+                    },
+                    onError = {
+                        this@ReaderPageImageView.onImageLoadError()
+                    },
+                )
+                .size(WebtoonViewSizeResolver(this@ReaderPageImageView))
+                .precision(Precision.INEXACT)
+                .cropBorders(config.cropBorders)
+                .customDecoder(true)
+                .crossfade(false)
+                .build()
+            context.imageLoader.enqueue(request)
+        } else {
+            when (data) {
+                is BitmapDrawable -> setImage(ImageSource.bitmap(data.bitmap))
+                is BufferedSource -> setImage(ImageSource.inputStream(data.inputStream()))
+                else -> throw IllegalArgumentException("Not implemented for class ${data::class.simpleName}")
+            }
+            isVisible = true
         }
-        isVisible = true
     }
 
     private fun prepareAnimatedImageView() {
