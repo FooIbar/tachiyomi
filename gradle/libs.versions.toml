@@ -84,7 +84,7 @@ sqldelight-dialects-sql = { module = "app.cash.sqldelight:sqlite-3-38-dialect", 
 sqldelight-gradle = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
 
 junit = "org.junit.jupiter:junit-jupiter:5.10.2"
-kotest-assertions = "io.kotest:kotest-assertions-core:5.8.1"
+kotest-assertions = "io.kotest:kotest-assertions-core:5.9.0"
 mockk = "io.mockk:mockk:1.13.10"
 
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
@@ -92,7 +92,7 @@ voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", vers
 voyager-tab-navigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 
-ktlint = "org.jlleitschuh.gradle:ktlint-gradle:12.1.0"
+ktlint = "org.jlleitschuh.gradle:ktlint-gradle:12.1.1"
 
 [bundles]
 compress = ["common-compress", "junrar"]
