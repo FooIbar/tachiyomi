@@ -33,7 +33,7 @@ dependencies {
 
 tasks {
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.freeCompilerArgs += listOf(
+        compilerOptions.freeCompilerArgs = listOf(
             "-Xcontext-receivers",
             "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
         )

@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     kotlin("android")
+    kotlin("plugin.compose")
 }
 
 android {
@@ -13,10 +14,6 @@ android {
 
     buildFeatures {
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = compose.versions.compiler.get()
     }
 }
 
@@ -40,10 +37,23 @@ dependencies {
     implementation(kotlinx.immutables)
 }
 
+composeCompiler {
+    if (project.findProperty("tachiyomi.enableComposeCompilerMetrics") == "true") {
+        val composeMetrics = project.layout.buildDirectory.dir("compose_metrics").get()
+        reportsDestination = composeMetrics
+        metricsDestination = composeMetrics
+    }
+
+    enableNonSkippingGroupOptimization = true
+
+    // https://medium.com/androiddevelopers/jetpack-compose-strong-skipping-mode-explained-cbdb2aa4b900
+    enableStrongSkippingMode = true
+}
+
 tasks {
     // See https://kotlinlang.org/docs/reference/experimental.html#experimental-status-of-experimental-api(-markers)
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.freeCompilerArgs += listOf(
+        compilerOptions.freeCompilerArgs = listOf(
             "-opt-in=androidx.compose.foundation.layout.ExperimentalLayoutApi",
             "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",

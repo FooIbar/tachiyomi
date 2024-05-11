@@ -1,5 +1,5 @@
 [versions]
-kotlin_version = "1.9.23"
+kotlin_version = "2.0.0-RC3"
 serialization_version = "1.6.3"
 xml_serialization_version = "0.86.3"
 
@@ -28,4 +28,5 @@ serialization = ["serialization-json", "serialization-json-okio", "serialization
 
 [plugins]
 android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin_version" }
+compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin_version" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin_version" }

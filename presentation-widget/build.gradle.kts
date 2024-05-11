@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     kotlin("android")
+    kotlin("plugin.compose")
 }
 
 android {
@@ -13,10 +14,6 @@ android {
 
     buildFeatures {
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = compose.versions.compiler.get()
     }
 }
 
@@ -35,4 +32,17 @@ dependencies {
     implementation(libs.coil.core)
 
     api(libs.injekt.core)
+}
+
+composeCompiler {
+    if (project.findProperty("tachiyomi.enableComposeCompilerMetrics") == "true") {
+        val composeMetrics = project.layout.buildDirectory.dir("compose_metrics").get()
+        reportsDestination = composeMetrics
+        metricsDestination = composeMetrics
+    }
+
+    enableNonSkippingGroupOptimization = true
+
+    // https://medium.com/androiddevelopers/jetpack-compose-strong-skipping-mode-explained-cbdb2aa4b900
+    enableStrongSkippingMode = true
 }
