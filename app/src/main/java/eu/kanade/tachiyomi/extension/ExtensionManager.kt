@@ -264,7 +264,7 @@ class ExtensionManager(
         val untrustedPkgNames = _untrustedExtensionsFlow.value.map { it.pkgName }.toSet()
         if (extension.pkgName !in untrustedPkgNames) return
 
-        trustExtension.trust(extension.pkgName, extension.versionCode, extension.signatureHash)
+        trustExtension.trust(extension.signatureHash)
 
         val nowTrustedExtensions = _untrustedExtensionsFlow.value
             .filter { it.pkgName == extension.pkgName && it.versionCode == extension.versionCode }
