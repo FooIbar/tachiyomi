@@ -6,7 +6,7 @@ val isDevFlavor: Boolean
     get() = BuildConfig.FLAVOR == "dev"
 
 val isPreviewBuildType: Boolean
-    get() = BuildConfig.BUILD_TYPE == "preview"
+    get() = true
 
 val isReleaseBuildType: Boolean
     get() = BuildConfig.BUILD_TYPE == "release"
