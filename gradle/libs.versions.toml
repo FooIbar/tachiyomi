@@ -1,7 +1,7 @@
 [versions]
 aboutlib_version = "11.2.0"
 leakcanary = "2.14"
-moko = "0.24.0-beta-4"
+moko = "0.24.0-beta-5"
 okhttp_version = "5.0.0-alpha.14"
 richtext = "0.20.0"
 shizuku_version = "12.2.0"
@@ -29,7 +29,7 @@ jsoup = "org.jsoup:jsoup:1.17.2"
 
 disklrucache = "com.jakewharton:disklrucache:2.0.2"
 unifile = "com.github.tachiyomiorg:unifile:e0def6b3dc"
-common-compress = "org.apache.commons:commons-compress:1.26.1"
+common-compress = "org.apache.commons:commons-compress:1.26.2"
 junrar = "com.github.junrar:junrar:7.5.5"
 
 sqlite-framework = { module = "androidx.sqlite:sqlite-framework", version.ref = "sqlite" }
