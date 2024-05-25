@@ -29,7 +29,8 @@ jsoup = "org.jsoup:jsoup:1.17.2"
 
 disklrucache = "com.jakewharton:disklrucache:2.0.2"
 unifile = "com.github.tachiyomiorg:unifile:e0def6b3dc"
-common-compress = "org.apache.commons:commons-compress:1.26.1"
+#noinspection GradleDependency
+commons-compress = "org.apache.commons:commons-compress:1.20"
 junrar = "com.github.junrar:junrar:7.5.5"
 
 sqlite-framework = { module = "androidx.sqlite:sqlite-framework", version.ref = "sqlite" }
@@ -95,7 +96,7 @@ voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", vers
 ktlint = "org.jlleitschuh.gradle:ktlint-gradle:12.1.1"
 
 [bundles]
-compress = ["common-compress", "junrar"]
+compress = ["commons-compress", "junrar"]
 okhttp = ["okhttp-core", "okhttp-logging", "okhttp-brotli", "okhttp-dnsoverhttps"]
 js-engine = ["quickjs-android"]
 sqlite = ["sqlite-framework", "sqlite-ktx", "sqlite-android"]
