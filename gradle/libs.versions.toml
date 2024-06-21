@@ -1,7 +1,7 @@
 [versions]
-aboutlib_version = "11.2.0"
+aboutlib_version = "11.2.1"
 leakcanary = "2.14"
-moko = "0.24.0-beta-4"
+moko = "0.24.1"
 okhttp_version = "5.0.0-alpha.14"
 richtext = "0.20.0"
 shizuku_version = "12.2.0"
@@ -30,7 +30,7 @@ jsoup = "org.jsoup:jsoup:1.17.2"
 disklrucache = "com.jakewharton:disklrucache:2.0.2"
 unifile = "com.github.tachiyomiorg:unifile:e0def6b3dc"
 #noinspection GradleDependency
-commons-compress = "org.apache.commons:commons-compress:1.20"
+commons-compress = "org.apache.commons:commons-compress:1.26.2"
 junrar = "com.github.junrar:junrar:7.5.5"
 
 sqlite-framework = { module = "androidx.sqlite:sqlite-framework", version.ref = "sqlite" }
@@ -85,7 +85,7 @@ sqldelight-dialects-sql = { module = "app.cash.sqldelight:sqlite-3-38-dialect", 
 sqldelight-gradle = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
 
 junit = "org.junit.jupiter:junit-jupiter:5.10.2"
-kotest-assertions = "io.kotest:kotest-assertions-core:5.9.0"
+kotest-assertions = "io.kotest:kotest-assertions-core:5.9.1"
 mockk = "io.mockk:mockk:1.13.11"
 
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
