@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PullRefresh(
     refreshing: Boolean,
-    enabled: () -> Boolean,
+    enabled: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     indicatorPadding: PaddingValues = PaddingValues(0.dp),
