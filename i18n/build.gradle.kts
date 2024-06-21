@@ -7,12 +7,11 @@ plugins {
 kotlin {
     androidTarget()
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api(libs.moko.core)
             }
         }
-        val androidMain by getting
     }
 }
 

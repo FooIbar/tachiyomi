@@ -2,14 +2,14 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base",
-    "group:allNonMajor"
+    "group:allNonMajor",
+    "schedule:monthly"
   ],
   "automerge": true,
-  "schedule": ["every friday"],
   "packageRules": [
     {
       "groupName": "Compose BOM",
-      "matchPackageNames": [
+      "matchDepNames": [
         "dev.chrisbanes.compose:compose-bom"
       ],
       "ignoreUnstable": false
@@ -17,11 +17,18 @@
     {
       // Compiler plugins are tightly coupled to Kotlin version
       "groupName": "Kotlin",
-      "matchPackagePrefixes": [
+      "matchDepPrefixes": [
         "androidx.compose.compiler",
         "org.jetbrains.kotlin.",
         "org.jetbrains.kotlin:"
-      ],
+      ]
     }
+  ],
+  ignoreDeps: [
+    "com.github.tachiyomiorg:subsampling-scale-image-view",
+    "com.github.tachiyomiorg:image-decoder",
+    "com.github.arkon.FlexibleAdapter:flexible-adapter",
+    "com.github.tachiyomiorg:unifile",
+    "org.apache.commons:commons-compress"
   ]
 }

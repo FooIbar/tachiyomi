@@ -10,6 +10,7 @@
 # Built files
 */build
 /build
+/.kotlin
 *.apk
 app/**/output.json
 
