@@ -194,7 +194,6 @@ dependencies {
     // Disk
     implementation(libs.disklrucache)
     implementation(libs.unifile)
-    implementation(libs.bundles.compress)
 
     // Preferences
     implementation(libs.preferencektx)
