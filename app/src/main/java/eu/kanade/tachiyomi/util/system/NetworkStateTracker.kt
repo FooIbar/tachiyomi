@@ -1,6 +1,10 @@
 package eu.kanade.tachiyomi.util.system
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -30,18 +34,34 @@ fun Context.activeNetworkState(): NetworkState {
     )
 }
 
+@Suppress("DEPRECATION")
 fun Context.networkStateFlow() = callbackFlow {
-    val networkCallback = object : NetworkCallback() {
-        override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
-            trySend(activeNetworkState())
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        val networkCallback = object : NetworkCallback() {
+            override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
+                trySend(activeNetworkState())
+            }
+            override fun onLost(network: Network) {
+                trySend(activeNetworkState())
+            }
         }
-        override fun onLost(network: Network) {
-            trySend(activeNetworkState())
-        }
-    }
 
-    connectivityManager.registerDefaultNetworkCallback(networkCallback)
-    awaitClose {
-        connectivityManager.unregisterNetworkCallback(networkCallback)
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
+        awaitClose {
+            connectivityManager.unregisterNetworkCallback(networkCallback)
+        }
+    } else {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if (intent.action == ConnectivityManager.CONNECTIVITY_ACTION) {
+                    trySend(activeNetworkState())
+                }
+            }
+        }
+
+        registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        awaitClose {
+            unregisterReceiver(receiver)
+        }
     }
 }

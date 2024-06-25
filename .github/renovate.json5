@@ -28,7 +28,6 @@
     "com.github.tachiyomiorg:subsampling-scale-image-view",
     "com.github.tachiyomiorg:image-decoder",
     "com.github.arkon.FlexibleAdapter:flexible-adapter",
-    "com.github.tachiyomiorg:unifile",
-    "org.apache.commons:commons-compress"
+    "com.github.tachiyomiorg:unifile"
   ]
 }
