@@ -25,7 +25,7 @@ class ArchiveReader(pfd: ParcelFileDescriptor) : Closeable {
                     return archive
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             archive.close()
             throw e
         }

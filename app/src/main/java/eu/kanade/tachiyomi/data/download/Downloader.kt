@@ -590,8 +590,8 @@ class Downloader(
     ) {
         val zip = mangaDir.createFile("$dirname.cbz$TMP_DIR_SUFFIX")!!
         ZipWriter(context, zip).use { writer ->
-            tmpDir.listFiles()?.forEach { img ->
-                writer.write(img)
+            tmpDir.listFiles()?.forEach {
+                writer.write(it)
             }
         }
         zip.renameTo("$dirname.cbz")

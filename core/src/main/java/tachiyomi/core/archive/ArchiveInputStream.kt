@@ -6,6 +6,11 @@ import java.io.InputStream
 import java.nio.ByteBuffer
 
 class ArchiveInputStream(buffer: Long, size: Long) : InputStream() {
+    private val closeLock = Any()
+
+    @Volatile
+    private var closed = false
+
     private val archive = Archive.readNew()
 
     init {
@@ -14,7 +19,7 @@ class ArchiveInputStream(buffer: Long, size: Long) : InputStream() {
             Archive.readSupportFilterAll(archive)
             Archive.readSupportFormatAll(archive)
             Archive.readOpenMemoryUnsafe(archive, buffer, size)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             close()
             throw e
         }
@@ -40,6 +45,11 @@ class ArchiveInputStream(buffer: Long, size: Long) : InputStream() {
     }
 
     override fun close() {
+        synchronized(closeLock) {
+            if (closed) return
+            closed = true
+        }
+
         Archive.readFree(archive)
     }
 

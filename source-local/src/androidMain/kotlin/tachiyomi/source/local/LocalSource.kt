@@ -207,10 +207,8 @@ actual class LocalSource(
     private fun copyComicInfoFileFromArchive(chapterArchives: List<UniFile>, folder: UniFile): UniFile? {
         for (chapter in chapterArchives) {
             chapter.archiveReader(context).use { reader ->
-                reader.getInputStream(COMIC_INFO_FILE)?.let { entry ->
-                    entry.use { stream ->
-                        return copyComicInfoFile(stream, folder)
-                    }
+                reader.getInputStream(COMIC_INFO_FILE)?.use { stream ->
+                    return copyComicInfoFile(stream, folder)
                 }
             }
         }
@@ -237,7 +235,7 @@ actual class LocalSource(
     override suspend fun getChapterList(manga: SManga): List<SChapter> = withIOContext {
         val chapters = fileSystem.getFilesInMangaDirectory(manga.url)
             // Only keep supported formats
-            .filter { it.isDirectory || Archive.isSupported(it) }
+            .filter { it.isDirectory || Archive.isSupported(it) || it.extension.equals("epub", true) }
             .map { chapterFile ->
                 SChapter.create().apply {
                     url = "${manga.url}/${chapterFile.name}"
@@ -325,8 +323,7 @@ actual class LocalSource(
                 }
                 is Format.Epub -> {
                     EpubFile(format.file.archiveReader(context)).use { epub ->
-                        val entry = epub.getImagesFromPages()
-                            .firstOrNull()
+                        val entry = epub.getImagesFromPages().firstOrNull()
 
                         entry?.let { coverManager.update(manga, epub.getInputStream(it)!!) }
                     }
