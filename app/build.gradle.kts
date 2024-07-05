@@ -167,6 +167,7 @@ dependencies {
     implementation(androidx.biometricktx)
     implementation(androidx.constraintlayout)
     implementation(androidx.corektx)
+    implementation(androidx.interpolator)
     implementation(androidx.splashscreen)
     implementation(androidx.recyclerview)
     implementation(androidx.viewpager)
