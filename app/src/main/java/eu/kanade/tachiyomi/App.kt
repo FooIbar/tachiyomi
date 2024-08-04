@@ -146,8 +146,8 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
             if (networkPreferences.verboseLogging().get()) logger(DebugLogger())
 
             // Coil spawns a new thread for every image load by default
-            fetcherDispatcher(Dispatchers.IO.limitedParallelism(8))
-            decoderDispatcher(Dispatchers.IO.limitedParallelism(2))
+            fetcherCoroutineContext(Dispatchers.IO.limitedParallelism(8))
+            decoderCoroutineContext(Dispatchers.IO.limitedParallelism(2))
         }.build()
     }
 
