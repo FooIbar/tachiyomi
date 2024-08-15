@@ -39,7 +39,7 @@ preferencektx = "androidx.preference:preference-ktx:1.2.1"
 
 injekt-core = "com.github.inorichi.injekt:injekt-core:65b0440"
 
-coil-bom = { module = "io.coil-kt.coil3:coil-bom", version = "3.0.0-alpha09" }
+coil-bom = { module = "io.coil-kt.coil3:coil-bom", version = "3.0.0-alpha10" }
 coil-core = { module = "io.coil-kt.coil3:coil" }
 coil-gif = { module = "io.coil-kt.coil3:coil-gif" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose" }
@@ -82,7 +82,7 @@ sqldelight-android-paging = { module = "app.cash.sqldelight:androidx-paging3-ext
 sqldelight-dialects-sql = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqldelight" }
 sqldelight-gradle = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
 
-junit = "org.junit.jupiter:junit-jupiter:5.10.3"
+junit = "org.junit.jupiter:junit-jupiter:5.11.0"
 kotest-assertions = "io.kotest:kotest-assertions-core:5.9.1"
 mockk = "io.mockk:mockk:1.13.12"
 
