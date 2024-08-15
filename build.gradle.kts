@@ -36,6 +36,7 @@ subprojects {
         plugins.apply("tachiyomi.lint")
 
         configure<BaseExtension> {
+            buildToolsVersion = AndroidConfig.buildToolsVersion
             compileSdkVersion(AndroidConfig.compileSdk)
             defaultConfig {
                 minSdk = AndroidConfig.minSdk
