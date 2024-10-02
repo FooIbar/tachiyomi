@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -261,10 +262,7 @@ composeCompiler {
         metricsDestination = composeMetrics
     }
 
-    enableNonSkippingGroupOptimization = true
-
-    // https://medium.com/androiddevelopers/jetpack-compose-strong-skipping-mode-explained-cbdb2aa4b900
-    enableStrongSkippingMode = true
+    featureFlags = setOf(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
 
 tasks {
