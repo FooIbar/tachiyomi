@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
  * in a write little, read many model.  Which is exactly our model.  This stores the factories and the resulting instances
  * for cases that keep them around (Singletons, Per Key instances, Per Thread instances)
  */
-@Suppress("ktlint:standard:max-line-length")
+@Suppress("ktlint")
 open class DefaultRegistrar : InjektRegistrar {
     private enum class FactoryType { SINGLETON, MULTI, MULTIKEYED, THREAD, THREADKEYED }
 
@@ -50,7 +50,12 @@ open class DefaultRegistrar : InjektRegistrar {
 
     override fun <R : Any> addSingletonFactory(forType: TypeReference<R>, factoryCalledOnce: () -> R) {
         factories.put(forType.type) {
-            existingValues.computeIfAbsent(Instance(forType.type, NOKEY)) { factoryCalledOnce() }
+            val key = Instance(forType.type, NOKEY)
+            existingValues.getOrElse(key) {
+                synchronized(existingValues) {
+                    existingValues.getOrPut(key, factoryCalledOnce)
+                }
+            }
         }
     }
 
@@ -60,7 +65,7 @@ open class DefaultRegistrar : InjektRegistrar {
 
     override fun <R : Any> addPerThreadFactory(forType: TypeReference<R>, factoryCalledOncePerThread: () -> R) {
         factories.put(forType.type) {
-            threadedValues.get()!!.getOrPut(Instance(forType.type, NOKEY)) { factoryCalledOncePerThread() }
+            threadedValues.get()!!.getOrPut(Instance(forType.type, NOKEY), factoryCalledOncePerThread)
         }
     }
 
@@ -72,10 +77,7 @@ open class DefaultRegistrar : InjektRegistrar {
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <R : Any, K : Any> addPerThreadPerKeyFactory(
-        forType: TypeReference<R>,
-        factoryCalledPerKeyPerThread: (K) -> R,
-    ) {
+    override fun <R : Any, K : Any> addPerThreadPerKeyFactory(forType: TypeReference<R>, factoryCalledPerKeyPerThread: (K) -> R) {
         keyedFactories.put(forType.type) { key ->
             threadedValues.get()!!.getOrPut(Instance(forType.type, key)) { factoryCalledPerKeyPerThread(key as K) }
         }
@@ -97,6 +99,7 @@ open class DefaultRegistrar : InjektRegistrar {
             keyedFactories.put(otherAncestorOrInterface.type, existingKeyedFactory)
         }
     }
+
     override fun <T : Any> hasFactory(forType: TypeReference<T>): Boolean {
         return factories.getByKey(forType.type) != null || keyedFactories.getByKey(forType.type) != null
     }
@@ -151,7 +154,6 @@ open class DefaultRegistrar : InjektRegistrar {
         return factory.invoke(key) as R
     }
 
-    @Suppress("ktlint")
     private fun assertLogger(expectedLoggerType: Type) {
         if (loggerFactory == null) {
             throw InjektionException("Cannot call getLogger() -- A logger factory has not been registered with Injekt")
@@ -169,8 +171,6 @@ open class DefaultRegistrar : InjektRegistrar {
     @Suppress("UNCHECKED_CAST")
     override fun <R : Any, T : Any> getLogger(expectedLoggerType: Type, forClass: Class<T>): R {
         assertLogger(expectedLoggerType)
-        return loggerFactory!!.classFactory(
-            forClass.erasedType(),
-        ) as R // if casting to wrong type, let it die with casting exception
+        return loggerFactory!!.classFactory(forClass.erasedType()) as R // if casting to wrong type, let it die with casting exception
     }
 }
