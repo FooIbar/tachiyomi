@@ -29,7 +29,7 @@ jsoup = "org.jsoup:jsoup:1.18.1"
 
 disklrucache = "com.jakewharton:disklrucache:2.0.2"
 unifile = "com.github.tachiyomiorg:unifile:a9de196cc7"
-libarchive = "me.zhanghai.android.libarchive:library:1.1.2"
+libarchive = "me.zhanghai.android.libarchive:library:1.1.4"
 
 sqlite-framework = { module = "androidx.sqlite:sqlite-framework", version.ref = "sqlite" }
 sqlite-ktx = { module = "androidx.sqlite:sqlite-ktx", version.ref = "sqlite" }
@@ -39,7 +39,7 @@ preferencektx = "androidx.preference:preference-ktx:1.2.1"
 
 injekt-core = "uy.kohesive.injekt:injekt-core:1.16.1"
 
-coil-bom = { module = "io.coil-kt.coil3:coil-bom", version = "3.0.0-alpha10" }
+coil-bom = { module = "io.coil-kt.coil3:coil-bom", version = "3.0.0-rc02" }
 coil-core = { module = "io.coil-kt.coil3:coil" }
 coil-gif = { module = "io.coil-kt.coil3:coil-gif" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose" }
@@ -82,9 +82,9 @@ sqldelight-android-paging = { module = "app.cash.sqldelight:androidx-paging3-ext
 sqldelight-dialects-sql = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqldelight" }
 sqldelight-gradle = { module = "app.cash.sqldelight:gradle-plugin", version.ref = "sqldelight" }
 
-junit = "org.junit.jupiter:junit-jupiter:5.11.1"
+junit = "org.junit.jupiter:junit-jupiter:5.11.3"
 kotest-assertions = "io.kotest:kotest-assertions-core:5.9.1"
-mockk = "io.mockk:mockk:1.13.12"
+mockk = "io.mockk:mockk:1.13.13"
 
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
