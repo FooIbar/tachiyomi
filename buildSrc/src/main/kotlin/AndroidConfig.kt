@@ -1,7 +1,7 @@
 object AndroidConfig {
-    const val buildToolsVersion = "35.0.0"
-    const val compileSdk = 35
+    const val buildToolsVersion = "36.0.0"
+    const val compileSdk = 36
     const val minSdk = 23
-    const val targetSdk = 35
-    const val ndk = "27.2.12479018"
+    const val targetSdk = 36
+    const val ndk = "28.1.13356709"
 }
