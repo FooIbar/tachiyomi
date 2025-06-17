@@ -5,12 +5,10 @@ import android.app.SearchManager
 import android.app.assist.AssistContent
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -20,10 +18,8 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,15 +28,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.core.animation.doOnEnd
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.util.Consumer
-import androidx.core.view.WindowCompat
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
@@ -48,14 +41,10 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.NavigatorDisposeBehavior
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.ui.UiPreferences
 import eu.kanade.presentation.components.AppStateBanners
-import eu.kanade.presentation.components.DownloadedOnlyBannerBackgroundColor
-import eu.kanade.presentation.components.IncognitoModeBannerBackgroundColor
-import eu.kanade.presentation.components.IndexingBannerBackgroundColor
 import eu.kanade.presentation.more.settings.screen.browse.ExtensionReposScreen
 import eu.kanade.presentation.more.settings.screen.data.RestoreBackupScreen
 import eu.kanade.presentation.util.AssistContentScreen
@@ -75,7 +64,6 @@ import eu.kanade.tachiyomi.ui.home.HomeScreen
 import eu.kanade.tachiyomi.ui.manga.MangaScreen
 import eu.kanade.tachiyomi.ui.more.OnboardingScreen
 import eu.kanade.tachiyomi.util.system.dpToPx
-import eu.kanade.tachiyomi.util.system.isNavigationBarNeedsScrim
 import eu.kanade.tachiyomi.util.system.openInBrowser
 import eu.kanade.tachiyomi.util.view.setComposeContent
 import kotlinx.coroutines.channels.awaitClose
@@ -98,7 +86,6 @@ import tachiyomi.presentation.core.util.collectAsState
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import uy.kohesive.injekt.injectLazy
-import androidx.compose.ui.graphics.Color.Companion as ComposeColor
 
 class MainActivity : BaseActivity() {
 
@@ -151,48 +138,11 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        // Draw edge-to-edge
-        // TODO: replace with ComponentActivity#enableEdgeToEdge
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
         setComposeContent {
             val incognito by preferences.incognitoMode().collectAsState()
             val downloadOnly by preferences.downloadedOnly().collectAsState()
             val indexing by downloadCache.isInitializing.collectAsState()
-
-            // Set status bar color considering the top app state banner
-            val systemUiController = rememberSystemUiController()
-            val isSystemInDarkTheme = isSystemInDarkTheme()
-            val statusBarBackgroundColor = when {
-                indexing -> IndexingBannerBackgroundColor
-                downloadOnly -> DownloadedOnlyBannerBackgroundColor
-                incognito -> IncognitoModeBannerBackgroundColor
-                else -> MaterialTheme.colorScheme.surface
-            }
-            LaunchedEffect(systemUiController, statusBarBackgroundColor) {
-                systemUiController.setStatusBarColor(
-                    color = ComposeColor.Transparent,
-                    darkIcons = statusBarBackgroundColor.luminance() > 0.5,
-                    transformColorForLightContent = { ComposeColor.Black },
-                )
-            }
-
-            // Set navigation bar color
             val context = LocalContext.current
-            val navbarScrimColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
-            LaunchedEffect(systemUiController, isSystemInDarkTheme, navbarScrimColor) {
-                systemUiController.setNavigationBarColor(
-                    color = if (context.isNavigationBarNeedsScrim()) {
-                        navbarScrimColor.copy(alpha = 0.7f)
-                    } else {
-                        ComposeColor.Transparent
-                    },
-                    darkIcons = !isSystemInDarkTheme,
-                    navigationBarContrastEnforced = false,
-                    transformColorForLightContent = { ComposeColor.Black },
-                )
-            }
-
             Navigator(
                 screen = HomeScreen,
                 disposeBehavior = NavigatorDisposeBehavior(disposeNestedNavigators = false, disposeSteps = true),
@@ -342,9 +292,6 @@ class MainActivity : BaseActivity() {
     private fun setSplashScreenExitAnimation(splashScreen: SplashScreen?) {
         val root = findViewById<View>(android.R.id.content)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && splashScreen != null) {
-            window.statusBarColor = Color.TRANSPARENT
-            window.navigationBarColor = Color.TRANSPARENT
-
             splashScreen.setOnExitAnimationListener { splashProvider ->
                 // For some reason the SplashScreen applies (incorrect) Y translation to the iconView
                 splashProvider.iconView.translationY = 0F

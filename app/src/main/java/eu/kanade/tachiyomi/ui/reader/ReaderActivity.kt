@@ -9,7 +9,6 @@ import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -19,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -26,16 +26,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.ColorUtils
 import androidx.core.net.toUri
 import androidx.core.transition.doOnEnd
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.hippo.unifile.UniFile
 import dev.chrisbanes.insetter.applyInsetter
@@ -312,6 +310,7 @@ class ReaderActivity : BaseActivity() {
                 PageIndicatorText(
                     currentPage = state.currentPage,
                     totalPages = state.totalPages,
+                    modifier = Modifier.navigationBarsPadding(),
                 )
             }
         }
@@ -456,15 +455,6 @@ class ReaderActivity : BaseActivity() {
             }
         }
 
-        val toolbarColor = ColorUtils.setAlphaComponent(
-            SurfaceColors.SURFACE_2.getColor(this),
-            if (isNightMode()) 230 else 242, // 90% dark 95% light
-        )
-        window.statusBarColor = toolbarColor
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            window.navigationBarColor = toolbarColor
-        }
-
         // Set initial visibility
         setMenuVisibility(viewModel.state.value.menuVisible)
     }
@@ -508,7 +498,7 @@ class ReaderActivity : BaseActivity() {
             binding.viewerContainer.removeAllViews()
         }
         viewModel.onViewerLoaded(newViewer)
-        updateViewerInset(readerPreferences.fullscreen().get())
+        updateViewerInset(readerPreferences.cutoutShort().get())
         binding.viewerContainer.addView(newViewer.getView())
 
         if (readerPreferences.showReadingMode().get()) {
@@ -737,14 +727,12 @@ class ReaderActivity : BaseActivity() {
     }
 
     /**
-     * Updates viewer inset depending on fullscreen reader preferences.
+     * Updates viewer inset depending on cutout reader preferences.
      */
-    private fun updateViewerInset(fullscreen: Boolean) {
+    private fun updateViewerInset(drawInCutout: Boolean) {
         viewModel.state.value.viewer?.getView()?.applyInsetter {
-            if (!fullscreen) {
-                type(navigationBars = true, statusBars = true) {
-                    padding()
-                }
+            type(navigationBars = true, statusBars = true, displayCutout = !drawInCutout) {
+                padding()
             }
         }
     }
@@ -802,7 +790,7 @@ class ReaderActivity : BaseActivity() {
                 .launchIn(lifecycleScope)
 
             readerPreferences.cutoutShort().changes()
-                .onEach(::setCutoutShort)
+                .onEach(::updateViewerInset)
                 .launchIn(lifecycleScope)
 
             readerPreferences.keepScreenOn().changes()
@@ -815,13 +803,6 @@ class ReaderActivity : BaseActivity() {
 
             merge(readerPreferences.grayscale().changes(), readerPreferences.invertedColors().changes())
                 .onEach { setLayerPaint(readerPreferences.grayscale().get(), readerPreferences.invertedColors().get()) }
-                .launchIn(lifecycleScope)
-
-            readerPreferences.fullscreen().changes()
-                .onEach {
-                    WindowCompat.setDecorFitsSystemWindows(window, !it)
-                    updateViewerInset(it)
-                }
                 .launchIn(lifecycleScope)
         }
 
@@ -853,18 +834,6 @@ class ReaderActivity : BaseActivity() {
                 SubsamplingScaleImageView.setDisplayProfile(data)
                 TachiyomiImageDecoder.displayProfile = data
             }
-        }
-
-        private fun setCutoutShort(enabled: Boolean) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
-
-            window.attributes.layoutInDisplayCutoutMode = when (enabled) {
-                true -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-                false -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
-            }
-
-            // Trigger relayout
-            setMenuVisibility(viewModel.state.value.menuVisible)
         }
 
         /**

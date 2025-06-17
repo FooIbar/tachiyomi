@@ -19,6 +19,5 @@ material-icons = { module = "androidx.compose.material:material-icons-extended" 
 glance = "androidx.glance:glance-appwidget:1.1.1"
 
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanist" }
-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 
 lintchecks = { module = "com.slack.lint.compose:compose-lint-checks", version = "1.4.2" }

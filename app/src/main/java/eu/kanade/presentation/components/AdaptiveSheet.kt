@@ -5,6 +5,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
@@ -70,6 +73,7 @@ fun AdaptiveSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     enableSwipeDismiss: Boolean = true,
+    contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
     content: @Composable () -> Unit,
 ) {
     val isTabletUi = isTabletUi()
@@ -79,7 +83,7 @@ fun AdaptiveSheet(
         properties = dialogProperties,
     ) {
         AdaptiveSheetImpl(
-            modifier = modifier,
+            modifier = modifier.windowInsetsPadding(contentWindowInsets()),
             isTabletUi = isTabletUi,
             enableSwipeDismiss = enableSwipeDismiss,
             onDismissRequest = onDismissRequest,

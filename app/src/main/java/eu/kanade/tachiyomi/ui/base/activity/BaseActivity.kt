@@ -2,6 +2,7 @@ package eu.kanade.tachiyomi.ui.base.activity
 
 import android.content.Context
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import eu.kanade.tachiyomi.ui.base.delegate.SecureActivityDelegate
 import eu.kanade.tachiyomi.ui.base.delegate.SecureActivityDelegateImpl
@@ -20,6 +21,7 @@ open class BaseActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         applyAppTheme(this)
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
     }
 }
