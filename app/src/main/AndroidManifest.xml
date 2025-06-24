@@ -49,6 +49,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Tachiyomi">
 
+        <profileable android:shell="true" />
+
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
