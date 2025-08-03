@@ -38,12 +38,10 @@ subprojects {
         configure<BaseExtension> {
             buildToolsVersion = AndroidConfig.buildToolsVersion
             compileSdkVersion(AndroidConfig.compileSdk)
+            ndkVersion = AndroidConfig.ndk
             defaultConfig {
                 minSdk = AndroidConfig.minSdk
                 targetSdk = AndroidConfig.targetSdk
-                ndk {
-                    version = AndroidConfig.ndk
-                }
             }
 
             compileOptions {
