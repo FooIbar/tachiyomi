@@ -14,3 +14,12 @@ repositories {
     mavenCentral()
     google()
 }
+
+gradlePlugin {
+    plugins {
+        register("shortcutHelper") {
+            id = "com.github.zellius.shortcut-helper"
+            implementationClass = "ru.solodovnikov.shortcuthelper.ShortcutHelperPlugin"
+        }
+    }
+}
